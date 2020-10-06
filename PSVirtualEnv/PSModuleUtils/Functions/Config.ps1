@@ -21,7 +21,12 @@ function Get-ConfigHome {
     Param()
 
     Process {
-        $config_home = Join-Path -Path $([System.Environment]::GetEnvironmentVariable("USERPROFILE", "process")) -ChildPath ".config"
+        if ($IsWindows) {
+            $config_home = Join-Path -Path $([System.Environment]::GetEnvironmentVariable("USERPROFILE", "process")) -ChildPath ".config"
+        }
+        else {
+            $config_home = Resolve-Path "~/.config"
+        }
 
         $xdg_home = [System.Environment]::GetEnvironmentVariable("XDG_CONFIG_HOME", "process")
         if ($xdg_home) {
@@ -304,7 +309,12 @@ function Get-ProjectDir {
     )
 
     Process {
-        $project_home = Join-Path -Path $([System.Environment]::GetEnvironmentVariable("USERPROFILE", "process")) -ChildPath $Name
+        if ($IsWindows) {
+            $project_home = Join-Path -Path $([System.Environment]::GetEnvironmentVariable("USERPROFILE", "process")) -ChildPath $Name
+        }
+        else {
+            $project_home = Join-Path (Resolve-Path "~/.config") $Name
+        }
 
         return $project_home
     }
